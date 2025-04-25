@@ -7,6 +7,9 @@ RUN corepack enable
 WORKDIR /app
 COPY . .
 
+# Update browserslist to avoid warnings
+RUN npx browserslist@latest --update-db
+
 # Add postcss resolution to fix export issues
 RUN apk add --no-cache jq && \
     jq '. + {resolutions: {"postcss": "8.4.31"}}' package.json > tmp.json && \
@@ -14,9 +17,6 @@ RUN apk add --no-cache jq && \
 
 # Install dependencies
 RUN yarn install
-
-# 👇 Fix the Webpack OpenSSL error by setting env var
-ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Build the app
 RUN yarn build
