@@ -1,5 +1,5 @@
-# Build environment
-FROM node:20-alpine AS build
+# Build environment (using Debian-based Node.js image)
+FROM node:20 AS build
 
 # Enable corepack for consistent yarn usage
 RUN corepack enable
