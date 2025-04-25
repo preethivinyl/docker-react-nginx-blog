@@ -1,20 +1,22 @@
 # Build environment
 FROM node:20-alpine AS build
 
-# Enable corepack for yarn resolution support (optional but recommended)
+# Enable corepack for consistent yarn usage
 RUN corepack enable
 
 WORKDIR /app
 COPY . .
 
-# Add forced resolution for postcss
-# (this step appends it if not already in package.json)
+# Add postcss resolution to fix export issues
 RUN apk add --no-cache jq && \
     jq '. + {resolutions: {"postcss": "8.4.31"}}' package.json > tmp.json && \
     mv tmp.json package.json
 
-# Install dependencies with forced resolution
+# Install dependencies
 RUN yarn install
+
+# 👇 Fix the Webpack OpenSSL error by setting env var
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Build the app
 RUN yarn build
